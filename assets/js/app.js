@@ -28,7 +28,6 @@ const CONFIG = {
 const STATUSES = [
   { key: 'running',     label: 'Running',     icon: 'check',  tone: 'good' },
   { key: 'standby',     label: 'Standby',     icon: 'pause',  tone: 'warning' },
-  { key: 'maintenance', label: 'Maintenance', icon: 'wrench', tone: 'serious' },
   { key: 'breakdown',   label: 'Breakdown',   icon: 'alert',  tone: 'critical' },
 ];
 
@@ -48,9 +47,6 @@ const EXACT_STATUS = {
   STANDBY: 'standby', 'STAND BY': 'standby', IDLE: 'standby', SIAP: 'standby',
   MENUNGGU: 'standby', READY: 'standby',
 
-  MAINTENANCE: 'maintenance', PERAWATAN: 'maintenance', SERVICE: 'maintenance',
-  SERVIS: 'maintenance', PERBAIKAN: 'maintenance', REPAIR: 'maintenance', PM: 'maintenance',
-
   BREAKDOWN: 'breakdown', BD: 'breakdown', RUSAK: 'breakdown', DOWN: 'breakdown',
   MATI: 'breakdown', TROUBLE: 'breakdown', GAGAL: 'breakdown',
 };
@@ -59,7 +55,6 @@ const EXACT_STATUS = {
 const STATUS_WORDS = [
   [/operas|operation|running|beroperasi|jalan|normal|\bok\b/i, 'running'],
   [/stand\s?by|siap|idle|menunggu|ready/i, 'standby'],
-  [/maintenance|perawatan|service|servis|perbaikan|repair|\bpm\b/i, 'maintenance'],
   [/break\s?down|\bbd\b|rusak|down|mati|trouble|gagal/i, 'breakdown'],
 ];
 
@@ -82,7 +77,6 @@ const SAMPLE_ROWS = [
   ['2026-10-03', 'Pit Utara', 'EX-2002', 'Excavator PC1250', 'Breakdown', 'Hose hidrolik boom pecah', '5.25', '15120', 'Dedi', 'Tunggu part'],
   ['2026-10-03', 'Pit Utara', 'DT-3001', 'Dump Truck HD465', 'Running', '', '0', '24510', 'Rahmat', 'Hauling OB'],
   ['2026-10-03', 'Pit Utara', 'DT-3002', 'Dump Truck HD785', 'Standby', '', '0', '22180', '', 'Tunggu operator'],
-  ['2026-10-03', 'Pit Selatan', 'EX-2003', 'Excavator PC2000', 'Maintenance', '', '0', '19240', 'Bambang', 'Service 500 jam'],
   ['2026-10-03', 'Pit Selatan', 'DT-3003', 'Dump Truck HD465', 'Breakdown', 'Turbo', '2.5', '20880', 'Joko', ''],
   ['2026-10-03', 'Pit Selatan', 'DT-3004', 'Dump Truck HD785', 'Running', '', '0', '23760', 'Sari', ''],
   ['2026-10-03', 'Pit Selatan', 'BD-5001', 'Bulldozer D85', 'Standby', '', '0', '14020', '', ''],
@@ -225,7 +219,7 @@ function parseLayout(grid) {
 
     /* baris ringkasan: label di satu baris, angkanya di baris bawahnya */
     if (!Object.keys(meta.summary).length && filled.length) {
-      const labels = filled.filter((o) => /^total\s*unit$|^running$|^standby$|^maintenance$|^breakdown$|^availability$/i.test(o.c.trim()));
+      const labels = filled.filter((o) => /^total\s*unit$|^running$|^standby$|^breakdown$|^availability$/i.test(o.c.trim()));
       if (labels.some((o) => /total\s*unit/i.test(o.c)) && grid[r + 1]) {
         const below = grid[r + 1];
         for (const l of labels) {
@@ -432,7 +426,7 @@ const state = {
   sort: { key: 'status', dir: 'asc' },
 };
 
-const STATUS_RANK = { breakdown: 0, maintenance: 1, standby: 2, running: 3 };
+const STATUS_RANK = { breakdown: 0, standby: 1, running: 2 };
 
 function visibleUnits() {
   const { site, status, q } = state.filter;
